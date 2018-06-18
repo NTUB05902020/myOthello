@@ -1,7 +1,17 @@
 #include "agent.hpp"
+#include <string.h>
 
 char defaultFileName[5] = "eval";
 std::default_random_engine generator;
+char buf[32];
+
+AgentType readAgentType(){
+	scanf("%s", buf);
+	if(strcmp(buf, "AB") == 0) return ALPHA_BETA;
+	else if(strcmp(buf, "ABR") == 0) return ALPHA_BETA_RAND;
+	else if(strcmp(buf, "PLAYER") == 0) return PLAYER;
+	else{ printf("Wrong agent type: %s\n", buf); exit(1);}
+}
 
 void printAgentType(AgentType type){
 	switch(type){
@@ -17,15 +27,21 @@ int randInt(int N){
 	return distribution(generator);
 }
 
+double randReal(){
+	std::uniform_real_distribution<double> distribution(0.0, 1.0);
+	return distribution(generator);
+}
+
 void Agent::setEvalNames(char *a, char *b){
 	readEvalName = a; writeEvalName = b;
 }
 
 void Agent::getPriceTable(){
 	const char *str = readEvalName.c_str();	FILE *fp = fopen(str, "r");
-	if(fp == NULL){ printf("Failed to open %s\n", str); exit(1);}
+	if(fp == NULL){ printf("getPriceTable: Failed to open %s\n", str); exit(1);}
 	double *p = priceTable;
 	for(int i=0;i<64;i+=8) fscanf(fp, "%lf%lf%lf%lf%lf%lf%lf%lf", &p[i], &p[i+1], &p[i+2], &p[i+3], &p[i+4], &p[i+5], &p[i+6], &p[i+7]);
+	fclose(fp);
 }
 
 sucInform Agent::alphaBeta(const Board &board, double alpha, double beta, const int &depth, bool warn){
@@ -81,16 +97,16 @@ sucInform Agent::alphaBeta(const Board &board, double alpha, double beta, const 
 	return ret;
 }
 
-Agent::Agent(const AgentType &which = PLAYER, char *readFileName = NULL, int depthL = 5){
+Agent::Agent(const AgentType &which = PLAYER, char *readFileName = NULL, int depthL = 5, double ran = 0.7){
 	if((type = which) != PLAYER){
-		depthLimit = depthL;
+		depthLimit = depthL; rand = ran;
 		setEvalNames(readFileName, readFileName);
 		getPriceTable();
 	}
 }
 
-Agent::Agent(const AgentType &which, char *readFileName, char *writeFileName, int depthL){
-	type = which; depthLimit = depthL;
+Agent::Agent(const AgentType &which, char *readFileName, char *writeFileName, int depthL, double ran){
+	type = which; depthLimit = depthL; rand = ran;
 	setEvalNames(readFileName, writeFileName);
 	getPriceTable();
 }
@@ -99,6 +115,16 @@ void Agent::print(){
 	printAgentType(type);
 	if(type != PLAYER) printf("read: %s   write: %s  depth limit = %d\n", readEvalName.c_str(), writeEvalName.c_str(), depthLimit);
 	//print price_table?
+}
+
+void Agent::writePriceTable(unsigned int *array, double re){
+	const char *str = writeEvalName.c_str(); FILE *fp = fopen(str, "w");
+	if(fp == NULL){ printf("writePriceTable: Failed to open %s\n", str); exit(1);}
+	double *p = priceTable;
+	for(int i=0;i<64;i+=8)
+		fprintf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf\n", p[i]+re*array[i], p[i+1]+re*array[i+1], p[i+2]+re*array[i+2],
+				p[i+3]+re*array[i+3], p[i+4]+re*array[i+4], p[i+5]+re*array[i+5], p[i+6]+re*array[i+6], p[i+7]+re*array[i+7]);
+	fclose(fp);
 }
 
 double Agent::evaluateBoard(const Board &board){
@@ -111,17 +137,22 @@ double Agent::evaluateBoard(const Board &board){
 	return ret;
 }
 
-Square Agent::getBestMove(const Board &board){
-	sucInform result; int num;
+Square Agent::getBestMove(Board &board){
+	sucInform result; int num; vector<Square> legalMoves;
 	switch(type){
 		case ALPHA_BETA:
 			result = alphaBeta(board, MINF, INF, 0, false);
 			if((num = result.moves.size()) == 0){ printf("alphaBeta returned empty moves!\n"); exit(1);}
-			return result.moves[0];
-		case ALPHA_BETA_RAND:
-			result = alphaBeta(board, MINF, INF, 0, false);
-			if((num = result.moves.size()) == 0){ printf("alphaBeta returned empty moves!\n"); exit(1);}
 			return result.moves[randInt(num)];
+		case ALPHA_BETA_RAND:
+			if(randReal() > rand){
+				legalMoves = board.getLegalMoves(); num = legalMoves.size();
+				return legalMoves[randInt(num)];
+			}else{
+				result = alphaBeta(board, MINF, INF, 0, false);
+				if((num = result.moves.size()) == 0){ printf("alphaBeta returned empty moves!\n"); exit(1);}
+				return result.moves[randInt(num)];
+			}
 	}
 }
 /*

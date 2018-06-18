@@ -20,25 +20,28 @@ typedef struct successorInformation{
 	vector<Square> moves;
 }sucInform;
 
+AgentType readAgentType();
 void printAgentType(AgentType type);
 int randInt(int N);
+double randReal();
 
 class Agent{
 private:
 	AgentType type;
 	int depthLimit;
 	string readEvalName, writeEvalName;
-	double priceTable[64];
+	double priceTable[64], rand;
 	
 	void setEvalNames(char *a, char *b);
 	void getPriceTable();
 	sucInform alphaBeta(const Board &board, double alpha, double beta, const int &depth, bool warn);
 public:
-	Agent(const AgentType &which, char *readFileName, int depthL);
-	Agent(const AgentType &which, char *readFileName, char *writeFileName, int depthL);
+	Agent(const AgentType &which, char *readFileName, int depthL, double ran);
+	Agent(const AgentType &which, char *readFileName, char *writeFileName, int depthL, double ran);
 	void print();
+	void writePriceTable(unsigned int *array, double re);
 	double evaluateBoard(const Board &board);
-	Square getBestMove(const Board &board);
+	Square getBestMove(Board &board);
 };
 
 #endif
