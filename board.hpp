@@ -31,6 +31,7 @@ public:
 	void setWhite(Square square);
 	void setEmpty(Square square);
 	vector<Direction> canReverse(Square square);
+	bool haveLegalMove();
 	vector<Square> getLegalMoves();
 	void print()const;
 	bool changeBoard(Square square);

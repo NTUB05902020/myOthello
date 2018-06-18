@@ -109,6 +109,14 @@ vector<Direction> Board::canReverse(Square square){
 	return ret;
 }
 
+bool Board::haveLegalMove(){
+	vector<Direction> dirs;
+	for(int i=0;i<64;++i){
+		dirs = canReverse((Square)i);
+		if(!dirs.empty()) return true;
+	}
+}
+
 vector<Square> Board::getLegalMoves(){
 	vector<Square> ret; vector<Direction> dirs;
 	for(int i=0;i<64;++i){
@@ -119,8 +127,15 @@ vector<Square> Board::getLegalMoves(){
 }
 
 void Board::print()const{
-	if(ended) printf("Game Ended!\n");
-	else{
+	if(ended){
+		printf("Game Ended!\n");
+		bitset<64> black = getAllBlack(), white = getAllWhite();
+		int bn = black.count(), wn = white.count();
+		printf("Black: %d   White: %d\n", bn, wn);
+		if(bn > wn) printf("Black won!\n");
+		else if(bn == wn) printf("Draw QQ\n");
+		else printf("White won!\n");
+	}else{
 		printf("%s's Turn\n", (blacksTurn)? "Black":"White");
 		for(int i=0, who=-1;i<8;++i){
 			for(int j=0;j<8;++j) printf("%d ", isWho((Square)++who));
