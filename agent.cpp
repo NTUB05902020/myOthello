@@ -13,7 +13,7 @@ void printAgentType(AgentType type){
 }
 
 int randInt(int N){
-	std::uniform_int_distribution<int> distribution(0, N);
+	std::uniform_int_distribution<int> distribution(0, N-1);
 	return distribution(generator);
 }
 
