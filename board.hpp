@@ -24,6 +24,7 @@ public:
 	bool isBlack(Square square)const;
 	bool isWhite(Square square)const;
 	bool isEmpty(Square square)const;
+	void getBoardString(char *string)const;
 	bitset<64> getAllEmpty()const;
 	bitset<64> getAllBlack()const;
 	bitset<64> getAllWhite()const;

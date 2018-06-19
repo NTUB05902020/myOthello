@@ -55,8 +55,9 @@ sucInform Agent::alphaBeta(const Board &board, double alpha, double beta, const 
 		if(warn){
 			bitset<64> black = board.getAllBlack(), white = board.getAllWhite();
 			int bNum = black.count(), wNum = white.count();
-			if(bNum > wNum) ret.eval = INF-1;
-			else ret.eval = (bNum < wNum)? MINF+1 : 0.0;
+			if(bNum > wNum) ret.eval = (isBlack)? (INF-1) : (MINF+1);
+			else if(bNum < wNum) ret.eval = (isBlack)? (MINF+1): (INF-1);
+			else ret.eval = 0.0;
 			return ret;
 		}else{
 			tempBoard.reverseTurn();
@@ -98,22 +99,58 @@ sucInform Agent::alphaBeta(const Board &board, double alpha, double beta, const 
 	return ret;
 }
 
-Agent::Agent(){
-	type = PLAYER;
-}
-
-Agent::Agent(const AgentType &which, char *readFileName = NULL, int depthL = 5, double ran = 0.7){
-	if((type = which) != PLAYER){
-		depthLimit = depthL; rand = ran;
-		setEvalNames(readFileName, readFileName);
-		getPriceTable();
+Square Agent::getBestMove(Board &board){
+	sucInform result; int num; vector<Square> legalMoves;
+	switch(type){
+		case ALPHA_BETA:
+			result = alphaBeta(board, MINF, INF, 0, false);
+			if((num = result.moves.size()) == 0){ printf("alphaBeta returned empty moves!\n"); exit(1);}
+			return result.moves[randInt(num)];
+		case ALPHA_BETA_RAND:
+			if(randReal() > rand){
+				legalMoves = board.getLegalMoves(); num = legalMoves.size();
+				return legalMoves[randInt(num)];
+			}else{
+				result = alphaBeta(board, MINF, INF, 0, false);
+				if((num = result.moves.size()) == 0){ printf("alphaBeta returned empty moves!\n"); exit(1);}
+				return result.moves[randInt(num)];
+			}
+		default:
+			printf("Failed at getBestMove:  no such agent type\n"); exit(1);
 	}
 }
 
-Agent::Agent(const AgentType &which, char *readFileName, char *writeFileName, int depthL, double ran){
-	type = which; depthLimit = depthL; rand = ran;
+Square Agent::playerGetMove(Board &board){
+	vector<Square> legalMoves = board.getLegalMoves();
+	int num = legalMoves.size(), iRead, jRead;
+	for(int i=0;i<num;++i) printf("(%d %d) ", getI(legalMoves[i])+1, getJ(legalMoves[i])+1);
+	while(1){
+		scanf("%d%d", &iRead, &jRead); --iRead; --jRead;
+		if(!outOfBound(iRead, jRead)) return getSquare(iRead, jRead);
+		else printf("Invalid move!\n");
+	}
+}
+
+Agent::Agent(){
+	type = PLAYER;
+	getMoveFunction = std::bind(&Agent::playerGetMove, this, std::placeholders::_1);
+}
+
+Agent::Agent(bool isB, const AgentType &which, char *readFileName = NULL, int depthL = 5, double ran = 0.7){
+	if((type = which) != PLAYER){
+		isBlack = isB; depthLimit = depthL; rand = ran;
+		setEvalNames(readFileName, readFileName);
+		getPriceTable();
+		getMoveFunction = std::bind(&Agent::getBestMove, this, std::placeholders::_1);
+	}else getMoveFunction = std::bind(&Agent::playerGetMove, this, std::placeholders::_1);
+}
+
+Agent::Agent(bool isB, const AgentType &which, char *readFileName, char *writeFileName, int depthL, double ran){
+	isBlack = isB; type = which; depthLimit = depthL; rand = ran;
 	setEvalNames(readFileName, writeFileName);
 	getPriceTable();
+	if(type == PLAYER) std::bind(&Agent::playerGetMove, this, std::placeholders::_1);
+	else std::bind(&Agent::getBestMove, this, std::placeholders::_1);
 }
 
 void Agent::print(){
@@ -140,33 +177,26 @@ void Agent::writePriceTable(unsigned int *array, double re){
 double Agent::evaluateBoard(const Board &board){
 	double ret = 0.0;
 	bitset<64> black = board.getAllBlack(), white = board.getAllWhite();
-	for(int i=0;i<64;++i){
-		if(white[i]) ret -= priceTable[i];
-		else if(black[i]) ret += priceTable[i];
+	if(isBlack){
+		for(int i=0;i<64;++i){
+			if(white[i]) ret -= priceTable[i];
+			else if(black[i]) ret += priceTable[i];
+		}
+	}else{
+		for(int i=0;i<64;++i){
+			if(white[i]) ret += priceTable[i];
+			else if(black[i]) ret -= priceTable[i];
+		}
 	}
 	return ret;
 }
 
-Square Agent::getBestMove(Board &board){
-	sucInform result; int num; vector<Square> legalMoves;
-	switch(type){
-		case ALPHA_BETA:
-			result = alphaBeta(board, MINF, INF, 0, false);
-			if((num = result.moves.size()) == 0){ printf("alphaBeta returned empty moves!\n"); exit(1);}
-			return result.moves[randInt(num)];
-		case ALPHA_BETA_RAND:
-			if(randReal() > rand){
-				legalMoves = board.getLegalMoves(); num = legalMoves.size();
-				return legalMoves[randInt(num)];
-			}else{
-				result = alphaBeta(board, MINF, INF, 0, false);
-				if((num = result.moves.size()) == 0){ printf("alphaBeta returned empty moves!\n"); exit(1);}
-				return result.moves[randInt(num)];
-			}
-		default:
-			printf("Failed at getBestMove:  no such agent type\n"); exit(1);
-	}
+Square Agent::getMove(Board &board){
+	Square ret = getMoveFunction(board);
+	return ret;
 }
+
+
 /*
 
 int main(){

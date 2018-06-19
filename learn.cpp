@@ -16,9 +16,9 @@ void playGame(Agent &b, Agent &w, unsigned int *record){
 			continue;
 		}
 		if(board.isBlacksTurn()){
-			move = b.getBestMove(board); ++(record[move]);
+			move = b.getMove(board); ++(record[move]);
 		}else{
-			move = w.getBestMove(board); --(record[move]);
+			move = w.getMove(board); --(record[move]);
 		}
 		board.changeBoard(move);
 	}
@@ -33,7 +33,7 @@ int main(){
 	bT = readAgentType(); scanf("%s%s%d%lf", blackIn, blackOut, &bDepth, &bRand);
 	wT = readAgentType(); scanf("%s%s%d%lf", whiteIn, whiteOut, &wDepth, &wRand);
 	scanf("%u%u%d%lf", &game_per_time, &times, &blackLearn, &reward);
-	Agent bAgent(bT, blackIn, blackOut, bDepth, bRand), wAgent(wT, whiteIn, whiteOut, wDepth, wRand);
+	Agent bAgent(true, bT, blackIn, blackOut, bDepth, bRand), wAgent(false, wT, whiteIn, whiteOut, wDepth, wRand);
 	unsigned int record[64]; Agent *whoLearn = (blackLearn)? &bAgent : &wAgent;
 	for(unsigned int i=0;i<times;++i){
 		for(int j=0;j<64;++j) record[i] = game_per_time;

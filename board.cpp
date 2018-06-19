@@ -43,6 +43,11 @@ bool Board::isEmpty(Square square)const{
 	return !occupied[square];
 }
 
+void Board::getBoardString(char *string)const{
+	for(int i=0;i<64;++i)
+		string[i] = '0'+isWho((Square)i);
+}
+
 bitset<64> Board::getAllEmpty()const{
 	bitset<64> temp = occupied; temp.flip();
 	return temp;
@@ -76,7 +81,7 @@ vector<Direction> Board::canReverse(Square square){
 	vector<Direction> ret; bool flag;
 	if(!isEmpty(square)) return ret;
 	if(blacksTurn){
-		for(Direction direction = Right;direction<8;direction = (Direction)(direction+1)){
+		for(Direction direction = Right;((int)direction)<8;direction = (Direction)(direction+1)){
 			flag = false; Square recent = square;
 			while(1){
 				recent = nextSquare(recent, direction);
@@ -91,7 +96,7 @@ vector<Direction> Board::canReverse(Square square){
 			}
 		}
 	}else{
-		for(Direction direction = Right;direction<8;direction = (Direction)(direction+1)){
+		for(Direction direction = Right;((int)direction)<8;direction = (Direction)(direction+1)){
 			flag = false; Square recent = square;
 			while(1){
 				recent = nextSquare(recent, direction);
