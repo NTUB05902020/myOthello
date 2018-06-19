@@ -98,7 +98,11 @@ sucInform Agent::alphaBeta(const Board &board, double alpha, double beta, const 
 	return ret;
 }
 
-Agent::Agent(const AgentType &which = PLAYER, char *readFileName = NULL, int depthL = 5, double ran = 0.7){
+Agent::Agent(){
+	type = PLAYER;
+}
+
+Agent::Agent(const AgentType &which, char *readFileName = NULL, int depthL = 5, double ran = 0.7){
 	if((type = which) != PLAYER){
 		depthLimit = depthL; rand = ran;
 		setEvalNames(readFileName, readFileName);

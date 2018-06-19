@@ -36,6 +36,7 @@ private:
 	void getPriceTable();
 	sucInform alphaBeta(const Board &board, double alpha, double beta, const int &depth, bool warn);
 public:
+	Agent();
 	Agent(const AgentType &which, char *readFileName, int depthL, double ran);
 	Agent(const AgentType &which, char *readFileName, char *writeFileName, int depthL, double ran);
 	void print();
