@@ -1,5 +1,6 @@
 #include "agent.hpp"
 #include <string.h>
+#include <cstdlib>
 
 char defaultFileName[5] = "eval";
 std::default_random_engine generator;
@@ -158,6 +159,8 @@ Square Agent::getBestMove(Board &board){
 				if((num = result.moves.size()) == 0){ printf("alphaBeta returned empty moves!\n"); exit(1);}
 				return result.moves[randInt(num)];
 			}
+		default:
+			printf("Failed at getBestMove:  no such agent type\n"); exit(1);
 	}
 }
 /*
