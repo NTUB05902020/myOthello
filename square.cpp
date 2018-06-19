@@ -1,4 +1,5 @@
 #include "square.hpp"
+#include <cstdlib>
 
 bool atLeft(Square square){
 	return (square % 8 == 0);
@@ -20,7 +21,8 @@ bool legalNextSquare(Square recent, Direction direction){
 	if(atLeft(recent) && (direction == LeftUp || direction == Left || direction == LeftDown)) return false;
 	if(atRight(recent) && (direction == RightDown || direction == Right || direction == RightUp)) return false;
 	if(atUp(recent) && (direction == RightUp || direction == Up || direction == LeftUp)) return false;
-	if(atDown(recent) && (direction == LeftDown || direction == Down || direction == RightDown)) return false;	
+	if(atDown(recent) && (direction == LeftDown || direction == Down || direction == RightDown)) return false;
+	return true;
 }
 
 int getI(Square square){
@@ -60,6 +62,8 @@ bool onDirection(Square start, Square end, Direction direction){
 			return (ej == sj && ei > si);
 		case 7: //RightDown
 			return (ei > si && (ei-si) == (ej-sj));
+		default: //No Such Direction
+			printf("Failed at onDirection:  No such direction!\n"); exit(1); 
 	}
 }
 

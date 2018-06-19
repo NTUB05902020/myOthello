@@ -115,6 +115,7 @@ bool Board::haveLegalMove(){
 		dirs = canReverse((Square)i);
 		if(!dirs.empty()) return true;
 	}
+	return false;
 }
 
 vector<Square> Board::getLegalMoves(){
