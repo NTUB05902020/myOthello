@@ -120,11 +120,16 @@ void Agent::print(){
 void Agent::writePriceTable(unsigned int *array, double re){
 	const char *str = writeEvalName.c_str(); FILE *fp = fopen(str, "w");
 	if(fp == NULL){ printf("writePriceTable: Failed to open %s\n", str); exit(1);}
-	double *p = priceTable;
+	double *p = priceTable, total = 0.0;
+	int who = 0;
+	for(int i=0;i<64;++i){
+		p[i] += re * array[i]; total += p[i];
+	}
+	total /= 64;
 	for(int i=0;i<64;i+=8)
-		fprintf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf\n", p[i]+re*array[i], p[i+1]+re*array[i+1], p[i+2]+re*array[i+2],
-				p[i+3]+re*array[i+3], p[i+4]+re*array[i+4], p[i+5]+re*array[i+5], p[i+6]+re*array[i+6], p[i+7]+re*array[i+7]);
-	fclose(fp);
+		fprintf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf\n", p[i]/total, p[i+1]/total, p[i+2]/total,
+				p[i+3]/total, p[i+4]/total, p[i+5]/total, p[i+6]/total, p[i+7]/total);
+	fflush(fp);	fclose(fp);
 }
 
 double Agent::evaluateBoard(const Board &board){

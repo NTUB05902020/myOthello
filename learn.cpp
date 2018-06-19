@@ -35,9 +35,8 @@ int main(){
 	scanf("%u%u%d%lf", &game_per_time, &times, &blackLearn, &reward);
 	Agent bAgent(bT, blackIn, blackOut, bDepth, bRand), wAgent(wT, whiteIn, whiteOut, wDepth, wRand);
 	unsigned int record[64]; Agent *whoLearn = (blackLearn)? &bAgent : &wAgent;
-	for(int i=0;i<64;++i) record[i] = game_per_time;
-	
 	for(unsigned int i=0;i<times;++i){
+		for(int j=0;j<64;++j) record[i] = game_per_time;
 		for(unsigned int j=0;j<game_per_time;++j) playGame(bAgent, wAgent, record);
 		printf("%u time over\n", i);
 		whoLearn->writePriceTable(record, reward);
