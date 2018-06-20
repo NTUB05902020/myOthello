@@ -28,8 +28,7 @@ int randInt(int N){
 	return distribution(generator);
 }
 
-double randReal(){
-	std::uniform_real_distribution<double> distribution(0.0, 1.0);
+double randReal(){	std::uniform_real_distribution<double> distribution(0.0, 1.0);
 	return distribution(generator);
 }
 
@@ -133,7 +132,7 @@ Square Agent::playerGetMove(Board &board){
 
 Agent::Agent(){
 	type = PLAYER;
-	getMoveFunction = std::bind(&Agent::playerGetMove, this, std::placeholders::_1);
+	//getMoveFunction = std::bind(&Agent::playerGetMove, this, std::placeholders::_1);
 }
 
 Agent::Agent(bool isB, const AgentType &which, char *readFileName = NULL, int depthL = 5, double ran = 0.7){
@@ -141,16 +140,16 @@ Agent::Agent(bool isB, const AgentType &which, char *readFileName = NULL, int de
 		isBlack = isB; depthLimit = depthL; rand = ran;
 		setEvalNames(readFileName, readFileName);
 		getPriceTable();
-		getMoveFunction = std::bind(&Agent::getBestMove, this, std::placeholders::_1);
-	}else getMoveFunction = std::bind(&Agent::playerGetMove, this, std::placeholders::_1);
+		//getMoveFunction = std::bind(&Agent::getBestMove, this, std::placeholders::_1);
+	}//else getMoveFunction = std::bind(&Agent::playerGetMove, this, std::placeholders::_1);
 }
 
 Agent::Agent(bool isB, const AgentType &which, char *readFileName, char *writeFileName, int depthL, double ran){
 	isBlack = isB; type = which; depthLimit = depthL; rand = ran;
 	setEvalNames(readFileName, writeFileName);
 	getPriceTable();
-	if(type == PLAYER) std::bind(&Agent::playerGetMove, this, std::placeholders::_1);
-	else std::bind(&Agent::getBestMove, this, std::placeholders::_1);
+	//if(type == PLAYER) std::bind(&Agent::playerGetMove, this, std::placeholders::_1);
+	//else std::bind(&Agent::getBestMove, this, std::placeholders::_1);
 }
 
 void Agent::print(){
@@ -159,7 +158,7 @@ void Agent::print(){
 	//print price_table?
 }
 
-void Agent::writePriceTable(unsigned int *array, double re){
+void Agent::writePriceTable(int *array, double re){
 	const char *str = writeEvalName.c_str(); FILE *fp = fopen(str, "w");
 	if(fp == NULL){ printf("writePriceTable: Failed to open %s\n", str); exit(1);}
 	double *p = priceTable, total = 0.0;
@@ -192,8 +191,7 @@ double Agent::evaluateBoard(const Board &board){
 }
 
 Square Agent::getMove(Board &board){
-	Square ret = getMoveFunction(board);
-	return ret;
+        return ((type == PLAYER)? playerGetMove(board):getBestMove(board));
 }
 
 

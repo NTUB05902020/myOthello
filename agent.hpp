@@ -6,9 +6,9 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <random>
-	#include <functional>
+//#include <functional>
 	using std::string;
-	using std::function;
+//using std::function;
 
 const double INF = 81000000.0;
 const double MINF = -INF;
@@ -34,7 +34,7 @@ private:
 	int depthLimit;
 	string readEvalName, writeEvalName;
 	double priceTable[64], rand;
-	function<Square(Board &)> getMoveFunction;
+  //function<Square(Board &)> getMoveFunction;
 	
 	void setEvalNames(char *a, char *b);
 	void getPriceTable();
@@ -46,7 +46,7 @@ public:
 	Agent(bool isB, const AgentType &which, char *readFileName, int depthL, double ran);
 	Agent(bool isB, const AgentType &which, char *readFileName, char *writeFileName, int depthL, double ran);
 	void print();
-	void writePriceTable(unsigned int *array, double re);
+	void writePriceTable(int *array, double re);
 	double evaluateBoard(const Board &board);
 	Square getMove(Board &board);
 };
