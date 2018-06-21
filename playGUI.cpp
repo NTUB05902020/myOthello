@@ -35,8 +35,8 @@ void playGame(Agent &b, Agent &w){
 		}
 		board.getBoardString(buffer); write(pipe_fd[1], buffer, 65);
 		move = (board.isBlacksTurn())? b.getMove(board) : w.getMove(board);
-		printSquare(move);
-		printf((board.changeBoard(move))? "true":"false");
+		//printSquare(move);
+		/*printf((*/board.changeBoard(move)/*)? "true":"false")*/;
 	}
 	board.print();
 }
@@ -59,7 +59,7 @@ int main(){
 		printf("black: [Type] [in] [depth]\nwhite: [Type] [in] [depth]\n");
 		bT = readAgentType(); scanf("%s%d", blackIn, &bDepth);
 		wT = readAgentType(); scanf("%s%d", whiteIn, &wDepth);
-		Agent b(true, bT, blackIn, bDepth, 1.0), w(false, wT, whiteIn, wDepth, 1.0);
+		Agent b(bT, blackIn, bDepth, 1.0), w(wT, whiteIn, wDepth, 1.0);
 		b.print(); w.print();
 		playGame(b, w); kill(GUI_pid, 9);
 	}

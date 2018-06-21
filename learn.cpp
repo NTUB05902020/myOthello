@@ -17,6 +17,7 @@ int bDepth, wDepth, blackLearn; AgentType bT, wT;
 double bRand, wRand, reward;
 mutex jobLock, recordLock;
 thread threads[THREAD_NUMBER];
+const int deltaRecord[2][2] = {{-1, 1}, {1, -1}};
 
 void playGame(Agent b, Agent w, int *record, int threadId){
 	while(1){
@@ -32,10 +33,10 @@ void playGame(Agent b, Agent w, int *record, int threadId){
 			}
 			if(board.isBlacksTurn()){
 				move = b.getMove(board); recordLock.lock();
-				++(record[move]); recordLock.unlock();
+				record[move] += deltaRecord[blackLearn][0]; recordLock.unlock();
 			}else{
 				move = w.getMove(board); recordLock.lock();
-				--(record[move]); recordLock.unlock();
+				record[move] += deltaRecord[blackLearn][1]; recordLock.unlock();
 			}
 			board.changeBoard(move);
 		}
@@ -47,8 +48,9 @@ int main(){
 	bT = readAgentType(); scanf("%s%s%d%lf", blackIn, blackOut, &bDepth, &bRand);
 	wT = readAgentType(); scanf("%s%s%d%lf", whiteIn, whiteOut, &wDepth, &wRand);
 	scanf("%u%u%d%lf", &game_per_time, &times, &blackLearn, &reward);
-	Agent bAgent(true, bT, blackIn, blackOut, bDepth, bRand), wAgent(false, wT, whiteIn, whiteOut, wDepth, wRand);
-	int record[64]; Agent *whoLearn = (blackLearn)? &bAgent : &wAgent;
+	Agent bAgent(bT, blackIn, blackOut, bDepth, bRand), wAgent(wT, whiteIn, whiteOut, wDepth, wRand);
+	blackLearn = (blackLearn)? 1:0; int record[64]; Agent *whoLearn = (blackLearn)? &bAgent : &wAgent;
+	
 	for(unsigned int i=0U;i<times;++i){
 		job = 0U;
 		for(int k=0;k<64;++k) record[k] = game_per_time;
@@ -57,7 +59,7 @@ int main(){
 		}
 		for(int k=0;k<THREAD_NUMBER;++k) threads[k].join();
 		PRINT("%u time over\n", i);
-		whoLearn->writePriceTable(record, ((blackLearn)? reward:-reward));
+		whoLearn->writePriceTable(record, reward);
 	}
 	return 0;
 }

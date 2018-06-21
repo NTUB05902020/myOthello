@@ -54,9 +54,8 @@ sucInform Agent::alphaBeta(const Board &board, double alpha, double beta, const 
 		if(warn){
 			bitset<64> black = board.getAllBlack(), white = board.getAllWhite();
 			int bNum = black.count(), wNum = white.count();
-			if(bNum > wNum) ret.eval = (isBlack)? (INF-1) : (MINF+1);
-			else if(bNum < wNum) ret.eval = (isBlack)? (MINF+1): (INF-1);
-			else ret.eval = 0.0;
+			if(bNum > wNum) ret.eval = INF-1;
+			else ret.eval = (bNum < wNum)? (MINF+1):(0.0);
 			return ret;
 		}else{
 			tempBoard.reverseTurn();
@@ -135,17 +134,17 @@ Agent::Agent(){
 	//getMoveFunction = std::bind(&Agent::playerGetMove, this, std::placeholders::_1);
 }
 
-Agent::Agent(bool isB, const AgentType &which, char *readFileName = NULL, int depthL = 5, double ran = 0.7){
+Agent::Agent(const AgentType &which, char *readFileName = NULL, int depthL = 5, double ran = 0.7){
 	if((type = which) != PLAYER){
-		isBlack = isB; depthLimit = depthL; rand = ran;
+		depthLimit = depthL; rand = ran;
 		setEvalNames(readFileName, readFileName);
 		getPriceTable();
 		//getMoveFunction = std::bind(&Agent::getBestMove, this, std::placeholders::_1);
 	}//else getMoveFunction = std::bind(&Agent::playerGetMove, this, std::placeholders::_1);
 }
 
-Agent::Agent(bool isB, const AgentType &which, char *readFileName, char *writeFileName, int depthL, double ran){
-	isBlack = isB; type = which; depthLimit = depthL; rand = ran;
+Agent::Agent(const AgentType &which, char *readFileName, char *writeFileName, int depthL, double ran){
+	type = which; depthLimit = depthL; rand = ran;
 	setEvalNames(readFileName, writeFileName);
 	getPriceTable();
 	//if(type == PLAYER) std::bind(&Agent::playerGetMove, this, std::placeholders::_1);
@@ -162,7 +161,6 @@ void Agent::writePriceTable(int *array, double re){
 	const char *str = writeEvalName.c_str(); FILE *fp = fopen(str, "w");
 	if(fp == NULL){ printf("writePriceTable: Failed to open %s\n", str); exit(1);}
 	double *p = priceTable, total = 0.0;
-	int who = 0;
 	for(int i=0;i<64;++i){
 		p[i] += re * array[i]; total += p[i];
 	}
@@ -176,16 +174,9 @@ void Agent::writePriceTable(int *array, double re){
 double Agent::evaluateBoard(const Board &board){
 	double ret = 0.0;
 	bitset<64> black = board.getAllBlack(), white = board.getAllWhite();
-	if(isBlack){
-		for(int i=0;i<64;++i){
-			if(white[i]) ret -= priceTable[i];
-			else if(black[i]) ret += priceTable[i];
-		}
-	}else{
-		for(int i=0;i<64;++i){
-			if(white[i]) ret += priceTable[i];
-			else if(black[i]) ret -= priceTable[i];
-		}
+	for(int i=0;i<64;++i){
+		if(white[i]) ret -= priceTable[i];
+		else if(black[i]) ret += priceTable[i];
 	}
 	return ret;
 }

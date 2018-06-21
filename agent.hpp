@@ -30,7 +30,6 @@ double randReal();
 class Agent{
 private:
 	AgentType type;
-	bool isBlack;
 	int depthLimit;
 	string readEvalName, writeEvalName;
 	double priceTable[64], rand;
@@ -43,8 +42,8 @@ private:
 	Square playerGetMove(Board &board);
 public:
 	Agent();
-	Agent(bool isB, const AgentType &which, char *readFileName, int depthL, double ran);
-	Agent(bool isB, const AgentType &which, char *readFileName, char *writeFileName, int depthL, double ran);
+	Agent(const AgentType &which, char *readFileName, int depthL, double ran);
+	Agent(const AgentType &which, char *readFileName, char *writeFileName, int depthL, double ran);
 	void print();
 	void writePriceTable(int *array, double re);
 	double evaluateBoard(const Board &board);
