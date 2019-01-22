@@ -1,6 +1,0 @@
-black: [Type] [In] [Out] [Depth] [Rand]
-white: [Type] [In] [Out] [Depth] [Rand]
-[game/time] [times] [black learn?] [reward]
-0 time over
-alphaBeta returned empty moves!
-mpty moves!
