@@ -1,6 +1,5 @@
 #include "learn.hpp"
 
-
 vector<double> vecAdd(const vector<double> &vec1, const vector<double> &vec2){
 	vector<double> ret;
 	transform(vec1.begin(), vec1.end(), vec2.begin(), back_inserter(ret), plus<double>());
@@ -30,6 +29,11 @@ vector<double> scalDiv(const vector<double> &v, const int &scalar){
 	return ret;
 }
 
+vector<double> scalDiv(const vector<double> &v, const double &scalar){
+	vector<double> ret;
+	transform(v.begin(), v.end(), back_inserter(ret), [&](double a) -> double{return a/scalar;});
+	return ret;
+}
 /*=================not in learn.hpp=====================*/
 double func1(const vector<double> &x, const int &y, const vector<double> &W){
 	return log(1 + exp(dot(W, scalMul(x, -y))));
@@ -51,7 +55,10 @@ vector<double> graEin(const vector<double> &W, const vector<vector<double>> &X, 
 	int D = W.size(), N = X.size(); vector<double> ret(D, 0.0);
 	for(int i=0;i<N;++i){
 		vector<double> tmp = scalMul(X[i], -Y[i]);
-		ret = vecAdd(ret, scalMul(tmp, logistic(dot(W, tmp))));
+		/*for(auto j=tmp.begin();j!=tmp.end();++j)
+			cout << *j << ' ';
+		cout << endl;
+		*/ret = vecAdd(ret, scalMul(tmp, logistic(dot(W, tmp))));
 	}
 	return scalDiv(ret, N);
 }

@@ -23,6 +23,7 @@ vector<double> vecAdd(const vector<double> &vec1, const vector<double> &vec2);
 vector<double> scalMul(const vector<double> &v, const int &scalar);
 vector<double> scalMul(const vector<double> &v, const double &scalar);
 vector<double> scalDiv(const vector<double> &v, const int &scalar);
+vector<double> scalDiv(const vector<double> &v, const double &scalar);
 double Ein(const vector<double> &W, const vector<vector<double>> &X, const vector<int> &Y);
 vector<double> graEin(const vector<double> &W, const vector<vector<double>> &X, const vector<int> &Y);
 
