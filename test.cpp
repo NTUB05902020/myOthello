@@ -20,13 +20,21 @@ vector<int> Y;
 
 void playGame(const Agent &ag){
 	Board brd;  int bNum, wNum; int result;
-	while(!brd.getLegalMoves().empty()) brd = brd.getNextBoard(ag.getMove(brd));
-	brd.getNum(bNum, wNum);
+	vector<vector<double>> tmp;
+	while(!brd.getLegalMoves().empty()){
+		vector<double> tmp2 = brd.getBoardVec();
+		tmp2.push_back(1.0); tmp.push_back(tmp2);
+		brd = brd.getNextBoard(ag.getMove(brd));
+	}
+	vector<double> tmp2 = brd.getBoardVec(); tmp2.push_back(1.0);
+	tmp.push_back(tmp2); brd.getNum(bNum, wNum);
 	if(bNum > wNum) result = 1;
 	else result = (wNum > bNum)? -1:0;
-	XLock.lock(); vector<double> tmp = brd.getBoardVec();
-	tmp.push_back(1.0); X.push_back(tmp); XLock.unlock();
-	YLock.lock();  Y.push_back(result);  YLock.unlock();
+	XLock.lock(); int addNum = tmp.size(); addNum = (addNum<5)?addNum:5;
+	for(auto i=tmp.end()-addNum;i!=tmp.end();++i) X.push_back(*i);
+	XLock.unlock();	YLock.lock();
+	for(int i=0;i<addNum;++i) Y.push_back(result);
+	YLock.unlock();
 }
 
 void printVec(const vector<double> &v){
