@@ -7,10 +7,10 @@ using std::mutex;
 using std::max_element;
 using std::min_element;
 
-#define THREAD_NUM 200
-#define N 600
+#define THREAD_NUM 240
+#define N 1200
 #define TIMES 60
-const double ita = 10000.0;
+const double ita = 100.0;
 
 thread threads[THREAD_NUM];
 mutex XLock, YLock;
@@ -44,7 +44,7 @@ void printVec(const vector<double> &v){
 }
 
 int main(int argc, char **argv){
-	for(int hi=0;hi<2;++hi){
+	for(int hi=0;hi<30;++hi){
 		printf("hi = %d\n  before  ", hi);
 		X.clear(); Y.clear();
 		Agent ag(LINEAR, buffer, buffer, 5, true, 0.3);
@@ -74,7 +74,6 @@ int main(int argc, char **argv){
 			if(i % 20 == 0) printf("  learning times: %d\n", i);
 		}
 		for(int i=0;i<65;++i) fwrite(&w[i], sizeof(double), 1, fp2);
-		printf("  after  "); printVec(w);
 		fflush(fp2); fclose(fp2);
 	}
 	exit(0);
