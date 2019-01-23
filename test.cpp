@@ -47,7 +47,7 @@ int main(int argc, char **argv){
 	for(int hi=0;hi<100;++hi){
 		printf("hi = %d\n  before  ", hi);
 		X.clear(); Y.clear();
-		Agent ag(LINEAR, buffer, buffer, 5, true, 0.3);
+		Agent ag(LINEAR, buffer, buffer, 7, true, 0.3);
 		vector<double> w_for_print = ag.getPriceTable();
 		printVec(w_for_print);
 		for(int job=0;job<N;job+=THREAD_NUM){
@@ -75,6 +75,12 @@ int main(int argc, char **argv){
 		}
 		for(int i=0;i<65;++i) fwrite(&w[i], sizeof(double), 1, fp2);
 		fflush(fp2); fclose(fp2);
+		if(hi % 10 == 0){
+			char outputFile[32]; sprintf(outputFile, "eval/%d.eval", hi/10);
+			FILE *fp = fopen(outputFile, "wb");
+			for(int i=0;i<65;++i) fwrite(&w[i], sizeof(double), 1, fp);
+			fflush(fp); fclose(fp);
+		}
 	}
 	exit(0);
 }
