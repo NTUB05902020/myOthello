@@ -16,7 +16,7 @@ thread threads[THREAD_NUM];
 mutex XLock, YLock;
 char buffer[8] = "LI.eval";
 vector<vector<double>> X;
-vector<int> Y;
+vecotr<int> Y;
 
 void playGame(const Agent &ag){
 	Board brd;  int bNum, wNum; int result;
