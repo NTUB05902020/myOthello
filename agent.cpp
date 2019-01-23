@@ -18,14 +18,14 @@ double randReal(){
 void printAgentType(const AgentType &which){
 	printf("Type: ");
 	switch(which){
-		case ALPHA_BETA:
-			printf("AB\n");
-			break;
+		case NAIIVE: printf("NA\n"); break;
+		case LINEAR: printf("LI\n"); break;
 	}
 }
 
 AgentType getAgentType(char *type){
-	if(strcmp(type, "AB") == 0) return ALPHA_BETA;
+	if(strcmp(type, "NA") == 0) return NAIIVE;
+	else if(strcmp(type, "LI") == 0) return LINEAR;
 	else{ printf("No such type!\n"); exit(1);}
 }
 
@@ -89,7 +89,12 @@ sucInform Agent::agentSearch(const Board &board, const int &depth, double alpha,
 	return ret;
 }
 
-double Agent::ABEvalFunc(const Board &board, const vector<double> &table){
+double Agent::NAEvalFunc(const Board &board, const vector<double> &table){
+	vector<double> tmp = board.getBoardVec();
+	return accumulate(tmp.begin(), tmp.end(), 0);
+}
+
+double Agent::LIEvalFunc(const Board &board, const vector<double> &table){
 	vector<double> tmp = board.getBoardVec();
 	return inner_product(tmp.begin(), tmp.end(), table.begin(), table[64]);
 }
@@ -97,15 +102,18 @@ double Agent::ABEvalFunc(const Board &board, const vector<double> &table){
 Agent::Agent(const AgentType &which, char *readFileName, char *writeFileName=NULL, int depthL=5, bool isRan=false, double rate=0.3){
 	type = which; depthLimit = depthL; randRate = ((isRand = isRan))? rate:-1.0;
 	if(writeFileName != NULL) writeEvalName = string(writeFileName);
-	double tmp; FILE *fp = fopen(readFileName, "rb"); if(fp == NULL){ printf("Failed to open %s\n", readFileName); exit(1);}
+	double tmp; FILE *fp;
 	switch(which){
-		case ALPHA_BETA:
+		case NAIIVE:
+			evalFunc = NAEvalFunc; break;
+		case LINEAR:
+			fp = fopen(readFileName, "rb");
+			if(fp == NULL){ printf("Failed to open %s\n", readFileName); exit(1);}
 			for(int i=0;i<65;++i){
 				fread(&tmp, sizeof(double), 1, fp);
 				priceTable.push_back(tmp);
 			}
-			evalFunc = ABEvalFunc;
-			break;
+			evalFunc = LIEvalFunc; fclose(fp); break;
 	}
 }
 
@@ -129,5 +137,6 @@ void Agent::print()const{
 }
 
 vector<double> Agent::getPriceTable()const{
+	if(type == NAIIVE){ printf("try to get PriceTable of NAIIVE\n"); exit(1);}
 	return priceTable;
 }

@@ -24,7 +24,8 @@ typedef struct sucInform{
 }sucInform;
 
 typedef enum AgentType{
-	ALPHA_BETA=0, //"AB"
+	NAIIVE=0, //"NA"
+	LINEAR,   //"LI"
 }AgentType;
 
 int randInt(int N);
@@ -48,7 +49,8 @@ private:
 	double (*evalFunc)(const Board &, const vector<double> &);
 	
 	static sucInform agentSearch(const Board &board, const int &depth, double alpha, double beta, bool warn, double (*const func)(const Board &, const vector<double> &), const vector<double> &table);
-	double static ABEvalFunc(const Board &board, const vector<double> &table);
+	double static NAEvalFunc(const Board &board, const vector<double> &table);
+	double static LIEvalFunc(const Board &board, const vector<double> &table);
 public:
 	Agent(const AgentType &which, char *readFileName, char *writeFileName, int depthL, bool isRan, double rate);
 	double evaluateBoard(const Board &board)const;
