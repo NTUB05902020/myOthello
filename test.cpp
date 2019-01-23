@@ -9,7 +9,7 @@ using std::min_element;
 
 #define THREAD_NUM 240
 #define N 1200
-#define TIMES 60
+#define TIMES 120
 const double ita = 100.0;
 
 thread threads[THREAD_NUM];
@@ -30,11 +30,11 @@ void playGame(const Agent &ag){
 	tmp.push_back(tmp2); brd.getNum(bNum, wNum);
 	if(bNum > wNum) result = 1;
 	else result = (wNum > bNum)? -1:0;
-	XLock.lock(); int addNum = tmp.size(); addNum = (addNum<5)?addNum:5;
+	XLock.lock(); YLock.lock();
+	int addNum = tmp.size(); addNum = (addNum<9)?addNum:9;
 	for(auto i=tmp.end()-addNum;i!=tmp.end();++i) X.push_back(*i);
-	XLock.unlock();	YLock.lock();
 	for(int i=0;i<addNum;++i) Y.push_back(result);
-	YLock.unlock();
+	XLock.unlock();	YLock.unlock();
 }
 
 void printVec(const vector<double> &v){
@@ -44,7 +44,7 @@ void printVec(const vector<double> &v){
 }
 
 int main(int argc, char **argv){
-	for(int hi=0;hi<30;++hi){
+	for(int hi=0;hi<100;++hi){
 		printf("hi = %d\n  before  ", hi);
 		X.clear(); Y.clear();
 		Agent ag(LINEAR, buffer, buffer, 5, true, 0.3);
