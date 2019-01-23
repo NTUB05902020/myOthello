@@ -16,7 +16,7 @@ thread threads[THREAD_NUM];
 mutex XLock, YLock;
 char buffer[8] = "LI.eval";
 vector<vector<double>> X;
-vecotr<int> Y;
+vector<int> Y;
 
 void playGame(const Agent &ag){
 	Board brd;  int bNum, wNum; int result;
@@ -37,9 +37,11 @@ void printVec(const vector<double> &v){
 
 int main(int argc, char **argv){
 	for(int hi=0;hi<2;++hi){
-		printf("hi = %d\n", hi);
+		printf("hi = %d\n  before  ", hi);
 		X.clear(); Y.clear();
 		Agent ag(LINEAR, buffer, buffer, 5, true, 0.3);
+		vector<double> w_for_print = ag.getPriceTable();
+		printVec(w_for_print);
 		for(int job=0;job<N;job+=THREAD_NUM){
 			for(int j=0;j<THREAD_NUM;++j)
 				threads[j] = thread(playGame, ag);
@@ -51,10 +53,8 @@ int main(int argc, char **argv){
 		FILE *fp2 = fopen("ab.eval", "wb");
 		for(int i=0;i<TIMES;++i){
 			double res = Ein(w, X, Y);
-			printf("   Ein = %lf\n  w = ", res);
 			vector<double> tmp = scalMul(graEin(w, X, Y), -ita);
-			printVec(w); printf("  gra = "); printVec(tmp);
-			w = vecAdd(w, tmp); printf("  newW = "); printVec(w);
+			w = vecAdd(w, tmp);
 			double M = -1, m = 0;
 			for(auto i=w.begin();i!=w.end();++i){
 				double val = (*i < 0)? (-*i):(*i);
@@ -66,7 +66,8 @@ int main(int argc, char **argv){
 			if(i % 20 == 0) printf("  learning times: %d\n", i);
 		}
 		for(int i=0;i<65;++i) fwrite(&w[i], sizeof(double), 1, fp2);
-		fclose(fp2);
+		printf("  after  "); printVec(w);
+		fflush(fp2); fclose(fp2);
 	}
 	exit(0);
 }

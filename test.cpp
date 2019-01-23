@@ -50,7 +50,7 @@ int main(int argc, char **argv){
 			printf("  jobs = %d\n", job);
 		}
 		vector<double> w = ag.getPriceTable();
-		FILE *fp2 = fopen("ab.eval", "wb");
+		FILE *fp2 = fopen("LI.eval", "wb");
 		for(int i=0;i<TIMES;++i){
 			double res = Ein(w, X, Y);
 			vector<double> tmp = scalMul(graEin(w, X, Y), -ita);
@@ -67,7 +67,7 @@ int main(int argc, char **argv){
 		}
 		for(int i=0;i<65;++i) fwrite(&w[i], sizeof(double), 1, fp2);
 		printf("  after  "); printVec(w);
-		fclose(fp2);
+		fflush(fp2); fclose(fp2);
 	}
 	exit(0);
 }
