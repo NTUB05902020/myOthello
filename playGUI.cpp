@@ -26,14 +26,14 @@ void parent_perror_exit(char *message, pid_t child_pid, int value){
 }
 
 void playGame(Agent &b, Agent &w){
-	Board board; Square move;
+	Board board;
 	while(1){
+		board.getBoardString(buffer); write(pipe_fd[1], buffer, 65);
 		if(board.getLegalMoves().empty()){
 			board.reverseTurn();
 			if(board.getLegalMoves().empty()) break;
 		}
-		board.getBoardString(buffer); write(pipe_fd[1], buffer, 65);
-		move = (board.isBlacksTurn())? b.getMove(board) : w.getMove(board);
+		board = board.getNextBoard((board.isBlacksTurn())? b.getMove(board) : w.getMove(board));
 	}
 	board.print(true);
 }
