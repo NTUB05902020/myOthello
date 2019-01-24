@@ -3,7 +3,6 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-#include <ctime>
 using std::thread;
 using std::mutex;
 using std::max_element;
@@ -70,7 +69,6 @@ int main(int argc, char **argv){
 		//start learn
 		vector<double> w = ag.getPriceTable();
 		printf("    "); printVec(w);
-		time_t my_time = time(NULL); printf("  time:  %s\n", ctime(&my_time));
 		FILE *fp2 = fopen("LI.eval", "wb");
 		for(int i=0;i<TIMES;++i){
 			double res = Ein(w, X, Y);
