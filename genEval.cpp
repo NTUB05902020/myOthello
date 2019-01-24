@@ -2,10 +2,12 @@
 #include "learn.hpp"
 #include <thread>
 #include <mutex>
+#include <queue>
 using std::thread;
 using std::mutex;
 using std::max_element;
 using std::min_element;
+using std::queue;
 
 #define THREAD_NUM 200
 #define N 1000
@@ -17,8 +19,9 @@ mutex XLock, YLock;
 char buffer[8] = "LI.eval";
 vector<vector<double>> X;
 vector<int> Y;
+queue<int> thread_pool;
 
-void playGame(const Agent &ag){
+void playGame(int threadID, const Agent &ag){
 	Board brd;  int bNum, wNum; int result;
 	vector<vector<double>> tmp;
 	while(!brd.getLegalMoves().empty()){
@@ -45,19 +48,35 @@ void printVec(const vector<double> &v){
 
 int main(int argc, char **argv){
 	for(int hi=0;hi<12;++hi){
-		printf("hi = %d\n  before  ", hi);
+		printf("hi = %d\n", hi);
+		//play game
 		X.clear(); Y.clear();
-		Agent ag(LINEAR, buffer, buffer, 7, true, 0.3);
-		vector<double> w_for_print = ag.getPriceTable();
-		printVec(w_for_print);
-		for(int job=0;job<N;job+=THREAD_NUM){
-			for(int j=0;j<THREAD_NUM;++j)
-				threads[j] = thread(playGame, ag);
-			for(int j=0;j<THREAD_NUM;++j)
-				threads[j].join();
-			printf("  jobs = %d\n", job);
+		Agent ag(LINEAR, buffer, buffer, 7, true, 0.5);
+		thread_pool = queue<int>();
+		int job = (N < THREAD_NUM)? N:THREAD_NUM;
+		for(int i=0;i<job;++i){
+			threads[i] = thread(playGame, i, ag);
+			thread_pool.push(i);
 		}
+		while(1){
+			int jobLeft = N - job; if(jobLeft <= 0) break;
+			int available = thread_pool.size();
+			for(int i=0;i<jobLeft;++i){
+				int popped = thread_pool.front();
+				threads[popped].join(); ++job;
+				threads[popped] = thread(playGame, popped, ag);
+				if(job % 100 == 0) printf("  job = %d\n", job);
+				thread_pool.pop(); thread_pool.push(popped);
+			}
+		}
+		job = thread_pool.size();
+		for(int i=0;i<job;++i){
+			threads[thread_pool.front()].join();
+			thread_pool.pop();
+		}
+		//start learn
 		vector<double> w = ag.getPriceTable();
+		printf("    "); printVec(w);
 		FILE *fp2 = fopen("LI.eval", "wb");
 		for(int i=0;i<TIMES;++i){
 			double res = Ein(w, X, Y);
