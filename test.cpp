@@ -47,7 +47,7 @@ int main(int argc, char **argv){
 	for(int hi=0;hi<12;++hi){
 		printf("hi = %d\n  before  ", hi);
 		X.clear(); Y.clear();
-		Agent ag(LINEAR, buffer, buffer, 7, true, 0.3);
+		Agent ag(LINEAR, buffer, buffer, 7, true, 0.5);
 		vector<double> w_for_print = ag.getPriceTable();
 		printVec(w_for_print);
 		for(int job=0;job<N;job+=THREAD_NUM){

@@ -7,8 +7,8 @@ using std::mutex;
 using std::max_element;
 using std::min_element;
 
-#define THREAD_NUM 240
-#define N 1200
+#define THREAD_NUM 200
+#define N 1000
 #define TIMES 120
 const double ita = 100.0;
 
@@ -44,7 +44,7 @@ void printVec(const vector<double> &v){
 }
 
 int main(int argc, char **argv){
-	for(int hi=0;hi<100;++hi){
+	for(int hi=0;hi<12;++hi){
 		printf("hi = %d\n  before  ", hi);
 		X.clear(); Y.clear();
 		Agent ag(LINEAR, buffer, buffer, 7, true, 0.3);
@@ -75,8 +75,8 @@ int main(int argc, char **argv){
 		}
 		for(int i=0;i<65;++i) fwrite(&w[i], sizeof(double), 1, fp2);
 		fflush(fp2); fclose(fp2);
-		if(hi % 10 == 0){
-			char outputFile[32]; sprintf(outputFile, "eval/%d.eval", hi/10);
+		if(hi % 3 == 0){
+			char outputFile[32]; sprintf(outputFile, "eval/%d.eval", hi/3);
 			FILE *fp = fopen(outputFile, "wb");
 			for(int i=0;i<65;++i) fwrite(&w[i], sizeof(double), 1, fp);
 			fflush(fp); fclose(fp);
