@@ -17,7 +17,7 @@ const double ita = 100.0;
 
 thread threads[THREAD_NUM];
 int avaID;
-mutex XLock, YLock, avaIDLock;
+mutex XYLock, avaIDLock;
 char buffer[8] = "LI.eval";
 vector<vector<double>> X;
 vector<int> Y;
@@ -37,12 +37,10 @@ void playGame(int threadID, const Agent &ag){
 	tmp.push_back(tmp2); brd.getNum(bNum, wNum);
 	if(bNum > wNum) result = 1;
 	else result = (wNum > bNum)? -1:0;
-	XLock.lock(); YLock.lock();
-	int addNum = tmp.size(); addNum = (addNum<9)?addNum:9;
+	XYLock.lock(); int addNum = tmp.size(); addNum = (addNum<9)?addNum:9;
 	for(auto i=tmp.end()-addNum;i!=tmp.end();++i) X.push_back(*i);
 	for(int i=0;i<addNum;++i) Y.push_back(result);
-	XLock.unlock();	YLock.unlock();
-	avaIDLock.lock(); avaID = threadID; cv.notify_all();
+	XYLock.unlock(); avaIDLock.lock(); avaID = threadID; cv.notify_all();
 }
 
 void printVec(const vector<double> &v){
