@@ -58,7 +58,6 @@ int main(int argc, char **argv){
 			threads[i] = thread(playGame, i, ag);
 			thread_pool.push(i);
 		}
-		job = 0;
 		while(1){
 			int jobLeft = N - job; if(jobLeft <= 0) break;
 			int available = thread_pool.size();
