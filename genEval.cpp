@@ -2,12 +2,13 @@
 #include "learn.hpp"
 #include <thread>
 #include <mutex>
-#include <queue>
+#include <condition_variable>
 using std::thread;
 using std::mutex;
 using std::max_element;
 using std::min_element;
-using std::queue;
+using std::unique_lock;
+using std::condition_variable;
 
 #define THREAD_NUM 200
 #define N 600
@@ -15,11 +16,14 @@ using std::queue;
 const double ita = 100.0;
 
 thread threads[THREAD_NUM];
-mutex XLock, YLock;
+int avaID;
+mutex XLock, YLock, avaIDLock;
 char buffer[8] = "LI.eval";
 vector<vector<double>> X;
 vector<int> Y;
-queue<int> thread_pool;
+mutex cvM;
+unique_lock<mutex> cvULM(cvM);
+condition_variable cv;
 
 void playGame(int threadID, const Agent &ag){
 	Board brd;  int bNum, wNum; int result;
@@ -38,6 +42,7 @@ void playGame(int threadID, const Agent &ag){
 	for(auto i=tmp.end()-addNum;i!=tmp.end();++i) X.push_back(*i);
 	for(int i=0;i<addNum;++i) Y.push_back(result);
 	XLock.unlock();	YLock.unlock();
+	avaIDLock.lock(); avaID = threadID; cv.notify_all();
 }
 
 void printVec(const vector<double> &v){
@@ -52,28 +57,16 @@ int main(int argc, char **argv){
 		//play game
 		X.clear(); Y.clear();
 		Agent ag(LINEAR, buffer, buffer, 7, true, 0.5);
-		thread_pool = queue<int>();
-		int job = (N < THREAD_NUM)? N:THREAD_NUM;
-		for(int i=0;i<job;++i){
-			threads[i] = thread(playGame, i, ag);
-			thread_pool.push(i);
+		int called = (N < THREAD_NUM)? N:THREAD_NUM, done = 0;
+		for(int i=0;i<called;++i) threads[i] = thread(playGame, i, ag);
+		for(;called < N;++called){
+			cv.wait(cvULM); threads[avaID].join();
+			if((++done) % 100 == 0) printf("  done = %d\n", done);
+			threads[avaID] = thread(playGame, avaID, ag); avaIDLock.unlock();
 		}
-		job = 0;
-		while(1){
-			int jobLeft = N - job; if(jobLeft <= 0) break;
-			int available = thread_pool.size();
-			for(int i=0;i<jobLeft;++i){
-				int popped = thread_pool.front();
-				threads[popped].join(); ++job;
-				threads[popped] = thread(playGame, popped, ag);
-				if(job % 100 == 0) printf("  job = %d\n", job);
-				thread_pool.pop(); thread_pool.push(popped);
-			}
-		}
-		job = thread_pool.size();
-		for(int i=0;i<job;++i){
-			threads[thread_pool.front()].join();
-			thread_pool.pop();
+		while(done < called){
+			cv.wait(cvULM); threads[avaID].join(); avaIDLock.unlock();
+			if((++done) % 100 == 0) printf("  done = %d\n", done);
 		}
 		//start learn
 		vector<double> w = ag.getPriceTable();
