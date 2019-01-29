@@ -38,9 +38,10 @@ void playGame(int threadID, const Agent &ag){
 	tmp.push_back(tmp2); brd.getNum(bNum, wNum);
 	if(bNum > wNum) result = 1;
 	else result = (wNum > bNum)? -1:0;
-	XYLock.lock(); int addNum = tmp.size(); addNum = (addNum<9)?addNum:9;
-	for(auto i=tmp.end()-addNum;i!=tmp.end();++i) X.push_back(*i);
-	for(int i=0;i<addNum;++i) Y.push_back(result);
+	XYLock.lock(); int addNum = tmp.size();
+	for(int i=0;i<addNum;++i){
+		X.push_back(tmp[i]); Y.push_back(result);
+	}
 	XYLock.unlock(); avaIDLock.lock(); avaID = threadID; cv.notify_all();
 }
 
