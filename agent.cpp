@@ -105,10 +105,10 @@ double Agent::COEvalFunc(const Board &board, const vector<double> &table){
 	double ret = 0.0; int wNum, bNum;
 	board.getNum(wNum, bNum); ret += table[36]*(wNum-bNum);
 	vector<double> tmp = board.getBoardVec();
-	Square order = {S11, S12, S13, S21, S22, S23, S31, S32, S33,
-	                S17, S18, S19, S27, S28, S29, S37, S38, S39,
-					S71, S72, S73, S81, S82, S83, S91, S92, S93,
-	                S77, S78, S79, S87, S88, S89, S97, S98, S99};
+	Square order[36] = {S11, S12, S13, S21, S22, S23, S31, S32, S33,
+	                S16, S17, S18, S26, S27, S28, S36, S37, S38,
+			S61, S62, S63, S71, S72, S73, S81, S82, S83,
+	                S66, S67, S68, S76, S77, S78, S86, S87, S88};
 	for(int i=0;i<36;++i) ret += table[i]*tmp[order[i]];
 	return ret + table[37];
 }

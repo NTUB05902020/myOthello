@@ -12,14 +12,14 @@ using std::unique_lock;
 using std::condition_variable;
 
 #define THREAD_NUM 200
-#define N 600
+#define N 2000
 #define TIMES 120
 const double ita = 100.0;
 
 thread threads[THREAD_NUM];
 int avaID;
 mutex XYLock, avaIDLock;
-char buffer[8] = "LI.eval";
+char buffer[8] = "CO.eval";
 vector<vector<double>> X;
 vector<int> Y;
 mutex cvM;
@@ -56,7 +56,7 @@ int main(int argc, char **argv){
 		printf("hi = %d\n", hi);
 		//play game
 		X.clear(); Y.clear();
-		Agent ag(CORNER, buffer, buffer, 7, true, 0.5);
+		Agent ag(CORNER, buffer, buffer, 5, true, 0.5);
 		int called = (N < THREAD_NUM)? N:THREAD_NUM, done = 0;
 		for(int i=0;i<called;++i) threads[i] = thread(playGame, i, ag);
 		for(;called < N;++called){
