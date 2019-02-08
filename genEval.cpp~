@@ -78,7 +78,7 @@ int main(int argc, char **argv){
 			w = vecAdd(w, tmp);
 			if(i % 20 == 0) printf("  learning times: %d\n", i);
 		}
-		FILE *fp = fopen("CO.eval", "wb");  int wLength = w.size();
+		FILE *fp = fopen("LI.eval", "wb");  int wLength = w.size();
 		for(int i=0;i<wLength;++i) fwrite(&w[i], sizeof(double), 1, fp);
 		fflush(fp); fclose(fp);
 		if(hi % 3 == 0){
