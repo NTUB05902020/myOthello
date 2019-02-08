@@ -55,10 +55,7 @@ vector<double> graEin(const vector<double> &W, const vector<vector<double>> &X, 
 	int D = W.size(), N = X.size(); vector<double> ret(D, 0.0);
 	for(int i=0;i<N;++i){
 		vector<double> tmp = scalMul(X[i], -Y[i]);
-		/*for(auto j=tmp.begin();j!=tmp.end();++j)
-			cout << *j << ' ';
-		cout << endl;
-		*/ret = vecAdd(ret, scalMul(tmp, logistic(dot(W, tmp))));
+		ret = vecAdd(ret, scalMul(tmp, logistic(dot(W, tmp))));
 	}
 	return scalDiv(ret, N);
 }

@@ -56,7 +56,7 @@ int main(int argc, char **argv){
 		printf("hi = %d\n", hi);
 		//play game
 		X.clear(); Y.clear();
-		Agent ag(LINEAR, buffer, buffer, 7, true, 0.5);
+		Agent ag(CORNER, buffer, buffer, 7, true, 0.5);
 		int called = (N < THREAD_NUM)? N:THREAD_NUM, done = 0;
 		for(int i=0;i<called;++i) threads[i] = thread(playGame, i, ag);
 		for(;called < N;++called){
@@ -72,26 +72,18 @@ int main(int argc, char **argv){
 		vector<double> w = ag.getPriceTable();
 		printf("    "); printVec(w);
 		time_t my_time = time(NULL); printf("  time:  %s\n", ctime(&my_time));
-		FILE *fp2 = fopen("LI.eval", "wb");
 		for(int i=0;i<TIMES;++i){
 			double res = Ein(w, X, Y);
 			vector<double> tmp = scalMul(graEin(w, X, Y), -ita);
 			w = vecAdd(w, tmp);
-			double M = -1, m = 0;
-			for(auto i=w.begin();i!=w.end();++i){
-				double val = (*i < 0)? (-*i):(*i);
-				if(M < val) M = val;
-				if(m > val) m = val;
-			}
-			if(m > 0) w = scalDiv(w, m);
-			else if(M > 0) w = scalDiv(w, M);
 			if(i % 20 == 0) printf("  learning times: %d\n", i);
 		}
-		for(int i=0;i<65;++i) fwrite(&w[i], sizeof(double), 1, fp2);
-		fflush(fp2); fclose(fp2);
+		FILE *fp = fopen("LI.eval", "wb");  int wLength = w.size();
+		for(int i=0;i<wLength;++i) fwrite(&w[i], sizeof(double), 1, fp);
+		fflush(fp); fclose(fp);
 		if(hi % 3 == 0){
 			char outputFile[32]; sprintf(outputFile, "eval/%d.eval", hi/3);
-			FILE *fp = fopen(outputFile, "wb");
+			fp = fopen(outputFile, "wb");
 			for(int i=0;i<65;++i) fwrite(&w[i], sizeof(double), 1, fp);
 			fflush(fp); fclose(fp);
 		}

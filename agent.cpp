@@ -20,12 +20,14 @@ void printAgentType(const AgentType &which){
 	switch(which){
 		case NAIIVE: printf("NA\n"); break;
 		case LINEAR: printf("LI\n"); break;
+		case CORNER: printf("CO\n"); break;
 	}
 }
 
 AgentType getAgentType(char *type){
 	if(strcmp(type, "NA") == 0) return NAIIVE;
 	else if(strcmp(type, "LI") == 0) return LINEAR;
+	else if(strcmp(type, "CO") == 0) return CORNER;
 	else{ printf("No such type!\n"); exit(1);}
 }
 
@@ -99,6 +101,18 @@ double Agent::LIEvalFunc(const Board &board, const vector<double> &table){
 	return inner_product(tmp.begin(), tmp.end(), table.begin(), table[64]);
 }
 
+double Agent::COEvalFunc(const Board &board, const vector<double> &table){
+	double ret = 0.0; int wNum, bNum;
+	board.getNum(wNum, bNum); ret += table[36]*(wNum-bNum);
+	vector<double> tmp = board.getBoardVec();
+	Square order = {S11, S12, S13, S21, S22, S23, S31, S32, S33,
+	                S17, S18, S19, S27, S28, S29, S37, S38, S39,
+					S71, S72, S73, S81, S82, S83, S91, S92, S93,
+	                S77, S78, S79, S87, S88, S89, S97, S98, S99};
+	for(int i=0;i<36;++i) ret += table[i]*tmp[order[i]];
+	return ret + table[37];
+}
+
 Agent::Agent(const AgentType &which, char *readFileName, char *writeFileName=NULL, int depthL=5, bool isRan=false, double rate=0.3){
 	type = which; depthLimit = depthL; randRate = ((isRand = isRan))? rate:-1.0;
 	if(writeFileName != NULL) writeEvalName = string(writeFileName);
@@ -114,6 +128,14 @@ Agent::Agent(const AgentType &which, char *readFileName, char *writeFileName=NUL
 				priceTable.push_back(tmp);
 			}
 			evalFunc = LIEvalFunc; fclose(fp); break;
+		case CORNER:
+			fp = fopen(readFileName, "rb");
+			if(fp == NULL){ printf("Failed to open %s\n", readFileName); exit(1);}
+			for(int i=0;i<38;++i){
+				fread(&tmp, sizeof(double), 1, fp);
+				priceTable.push_back(tmp);
+			}
+			evalFunc = COEvalFunc; fclose(fp); break;
 	}
 }
 
