@@ -36,7 +36,7 @@ int main(){
 				printf("Failed to dup2 stderr\n");
 				exit(1);
 			}
-			execlp("./genKifu", "./genKifu", "record/CO/0.eval", "record/CO/1.eval", NULL);
+			execlp("./genKifu", "./genKifu", "record/CO/0.eval", "Eval", NULL);
 		}
 	}
 	exit(0);

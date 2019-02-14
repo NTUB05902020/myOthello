@@ -58,13 +58,12 @@ int main(int argc, char **argv){
 	int called = (N < THREAD_NUM)? N:THREAD_NUM, done = 0;
 	for(int i=0;i<called;++i) threads[i] = thread(playGame, i, ag);
 	for(;called < N;++called){
-		cv.wait(cvULM); threads[avaID].join();
-		if((++done) % 100 == 0) printf("  done = %d\n", done);
+		cv.wait(cvULM); threads[avaID].join(); ++done;
 		threads[avaID] = thread(playGame, avaID, ag); avaIDLock.unlock();
 	}
 	while(done < called){
-		cv.wait(cvULM); threads[avaID].join(); avaIDLock.unlock();
-		if((++done) % 100 == 0) printf("  done = %d\n", done);
+		cv.wait(cvULM); threads[avaID].join();
+		avaIDLock.unlock(); ++done;
 	}
 	fflush(fp); fclose(fp); exit(0);
 }
