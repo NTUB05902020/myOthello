@@ -16,7 +16,7 @@ using std::condition_variable;
 const double ita = 100.0;
 
 thread threads[THREAD_NUM];
-int avaID; FILE *fp;
+int avaID; FILE *fp; time_t currentTime;
 mutex fpLock, avaIDLock;
 mutex cvM;
 unique_lock<mutex> cvULM(cvM);
@@ -53,6 +53,8 @@ void printVec(const vector<double> &v){
 int main(int argc, char **argv){
 	if(argc != 3){ printf("format: %s [evalFile] [writeTo]\n", argv[0]); exit(1);}
 	//play game
+	currentTime = time(NULL);
+	printf("%s\n", ctime(&currentTime));
 	Agent ag(CORNER, argv[1], argv[1], 5, true, 0.5);
 	if((fp = fopen(argv[2], "w")) == NULL){ printf("Failed to open %s\n", argv[2]); exit(1);}
 	int called = (N < THREAD_NUM)? N:THREAD_NUM, done = 0;
@@ -65,5 +67,7 @@ int main(int argc, char **argv){
 		cv.wait(cvULM); threads[avaID].join();
 		avaIDLock.unlock(); ++done;
 	}
+	currentTime = time(NULL);
+	printf("%s\n", ctime(&currentTime));
 	fflush(fp); fclose(fp); exit(0);
 }
