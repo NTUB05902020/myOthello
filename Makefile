@@ -3,8 +3,8 @@ all:
 	g++ -std=c++11 square.cpp board.cpp agent.cpp playGUI.cpp -o playGUI
 	gcc clean_to_zero.c -o clean
 	gcc doublefork.c -o df
-learn:
-	g++ -std=c++11 -pthread square.cpp board.cpp agent.cpp learn.cpp genEval.cpp -o startLearn
+genKifu:
+	g++ -std=c++11 -pthread square.cpp board.cpp agent.cpp learn.cpp genKifu.cpp -o genKifu
 playGUI:
 	g++ -std=c++11 square.cpp board.cpp agent.cpp playGUI.cpp -o playGUI
 clean:
