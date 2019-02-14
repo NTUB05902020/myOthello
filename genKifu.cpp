@@ -12,8 +12,7 @@ using std::unique_lock;
 using std::condition_variable;
 
 #define THREAD_NUM 200
-#define N 2000
-#define TIMES 120
+#define N 10000
 const double ita = 100.0;
 
 thread threads[THREAD_NUM];
