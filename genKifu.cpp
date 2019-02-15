@@ -10,7 +10,7 @@ using std::unique_lock;
 using std::condition_variable;
 
 #define THREAD_NUM 200
-#define N 4000
+#define N 8000
 
 thread threads[THREAD_NUM];
 int avaID; FILE *fp; time_t currentTime;
@@ -31,7 +31,7 @@ void playGame(int threadID, const Agent &ag){
 	if(bNum > wNum) result = 1;
 	else result = (wNum > bNum)? -1:0;
 	fpLock.lock();
-	for(int i=0;i<tmp.size();++i){
+	for(int i=2;i<tmp.size();++i){
 		for(int j=0;j<tmp[i].size();++j){
 			fprintf(fp, "%d ", (int)tmp[i][j]);
 		}
