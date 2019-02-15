@@ -51,12 +51,12 @@ fp.close()
 print(len(X), len(X[0]), len(Y), len(w))
 #print(N, D)
 #print(w)
-learningTime = 600
+learningTime = 300
 ita, lr = 10, 0
 EINS, x_axis = list(), np.arange(learningTime)
 for i in range(learningTime):
 	tmp, gra = Ein(X, Y, w), graEin(X, Y, w)
-	if i % 100 == 0:
+	if i % 30 == 0:
 		print(i, 'times', tmp)
 	EINS.append(tmp)
 	lr += tmp**2
