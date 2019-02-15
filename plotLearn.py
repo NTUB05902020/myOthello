@@ -52,7 +52,7 @@ print(len(X), len(X[0]), len(Y), len(w))
 #print(N, D)
 #print(w)
 learningTime = 600
-ita, lr = 1, 0
+ita, lr = 10, 0
 EINS, x_axis = list(), np.arange(learningTime)
 for i in range(learningTime):
 	tmp, gra = Ein(X, Y, w), graEin(X, Y, w)
