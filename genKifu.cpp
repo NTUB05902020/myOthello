@@ -10,7 +10,7 @@ using std::unique_lock;
 using std::condition_variable;
 
 #define THREAD_NUM 200
-#define N 1000
+#define N 4000
 
 thread threads[THREAD_NUM];
 int avaID; FILE *fp; time_t currentTime;
