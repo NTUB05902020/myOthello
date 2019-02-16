@@ -41,7 +41,8 @@ double dot(array<double, D> a, array<double, D> b){
 
 void Ein(void){
 	while(1){
-		nowMutex.lock(); if(now == N) pthread_exit(0);
+		nowMutex.lock(); if(now == N){ nowMutex.unlock(); pthread_exit(0);}
+		//printf("Ein thread %d  now = %d  ein = %lf\n", get_id(), now, ein);
 		int me = now++; nowMutex.unlock();
 		double tmp = (Y[me] == 0)? log_2 : log(1 + exp(-Y[me]*dot(w, X[me])));
 		einMutex.lock(); ein += tmp; einMutex.unlock();
@@ -50,13 +51,13 @@ void Ein(void){
 
 void Gra(void){
 	while(1){
-		nowMutex.lock(); if(now == N) pthread_exit(0);
+		nowMutex.lock(); if(now == N){ nowMutex.unlock(); pthread_exit(0);}
 		int me = now++; nowMutex.unlock();
 		if(Y[me] == 0) continue;
 		double tmp = dot(w, X[me]);
 		tmp = (Y[me] > 0)? -1/(1 + exp(tmp)) : 1/(1 + exp(-tmp));
 		graMutex.lock();
-		for(int i=0;i<D;++i) gra[i] += X[me][i]*tmp;
+		for(int i=0;i<D;++i) gra[i] += X[me][i]*tmp/sqrt(lr);
 		graMutex.unlock();
 	}
 }
@@ -86,7 +87,7 @@ int main(int argc, char **argv){
 		ein = 0.0; now = 0;
 		for(int j=0;j<THREAD_NUM;++j) threads[j] = thread(Ein);
 		for(int j=0;j<THREAD_NUM;++j) threads[j].join();
-		gra.fill(0.0); now = 0;
+		gra.fill(0.0); now = 0; lr += ein*ein;
 		for(int j=0;j<THREAD_NUM;++j) threads[j] = thread(Gra);
 		for(int j=0;j<THREAD_NUM;++j) threads[j].join();
 		if(i%50 == 0){
