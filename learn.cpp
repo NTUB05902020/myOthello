@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
+#include <ctime>
 #include <thread>
 #include <mutex>
 #include <vector>
@@ -15,6 +16,7 @@ using std::array;
 
 thread threads[THREAD_NUM];
 mutex nowMutex, einMutex, graMutex;
+time_t currentTime;
 FILE *fp;
 int N = 0, now = 0;
 double ita=1.0, lr=0.0, log_2 = log(2), ein;
@@ -64,6 +66,7 @@ void Gra(void){
 
 int main(int argc, char **argv){
 	if(argc != 5){ printf("format: %s [Kifu] [ReadEval] [WriteEval] [EIN record]\n", argv[0]); exit(1);}
+	currentTime = time(NULL); printf("%s\n", ctime(&currentTime)); fflush(stdout);
 	
 	//read X Y
 	if((fp = fopen(argv[1], "r")) == NULL){ printf("Failed to open %s\n", argv[1]); exit(1);}
@@ -102,5 +105,6 @@ int main(int argc, char **argv){
 	//write new w
 	if((fp = fopen(argv[3], "wb")) == NULL){ printf("Failed to open %s for WriteEval\n", argv[2]); exit(1);}
 	for(int i=0;i<D;++i) fwrite(&w[i], sizeof(double), 1, fp);
-	fflush(fp); fclose(fp); exit(0);
+	fflush(fp); fclose(fp);
+	currentTime = time(NULL); printf("%s\n", ctime(&currentTime)); fflush(stdout); exit(0);
 }
