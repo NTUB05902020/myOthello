@@ -91,7 +91,7 @@ int main(int argc, char **argv){
 		for(int j=0;j<THREAD_NUM;++j) threads[j] = thread(Gra);
 		for(int j=0;j<THREAD_NUM;++j) threads[j].join();
 		if(i%50 == 0){
-			fprintf(fp, "%lf\n", i, ein); fflush(fp);
+			fprintf(fp , "times: %d  Ein: %lf\n", i, ein); fflush(fp);
 			printf(fp, "times: %d  Ein: %lf\nW:\n", i, ein);
 			printArray(w); printf("gra:\n"); printArray(gra); printf("\n");
 		}
