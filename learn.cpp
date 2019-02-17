@@ -90,9 +90,10 @@ int main(int argc, char **argv){
 		gra.fill(0.0); now = 0; lr += ein*ein;
 		for(int j=0;j<THREAD_NUM;++j) threads[j] = thread(Gra);
 		for(int j=0;j<THREAD_NUM;++j) threads[j].join();
+		for(int j=0;j<D;++j){ gra[j]/=N; w[j] -= (ita/lr*gra[j]);}
+		fprintf(fp, "%lf\n", ein);
 		if(i%50 == 0){
-			fprintf(fp, "%lf\n", i, ein); fflush(fp);
-			printf(fp, "times: %d  Ein: %lf\nW:\n", i, ein);
+			printf("times: %d  Ein: %lf\nW:\n", i, ein);
 			printArray(w); printf("gra:\n"); printArray(gra); printf("\n");
 		}
 	}

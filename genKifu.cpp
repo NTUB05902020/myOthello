@@ -9,7 +9,7 @@ using std::unique_lock;
 using std::condition_variable;
 
 #define THREAD_NUM 200
-#define N 4000
+#define N 6000
 
 thread threads[THREAD_NUM];
 int avaID; FILE *fp; time_t currentTime;
@@ -38,19 +38,12 @@ void playGame(int threadID, const Agent &ag){
 	}
 	fpLock.unlock(); avaIDLock.lock(); avaID = threadID; cv.notify_all();
 }
-/*
-void printVec(const vector<double> &v){
-	printf("vector:  ");
-	for(auto i=v.begin();i!=v.end();++i) printf("%lf ", *i);
-	printf("\n");
-}
-*/
 
 int main(int argc, char **argv){
 	if(argc != 3){ printf("format: %s [evalFile] [writeTo]\n", argv[0]); exit(1);}
 	//play game
 	currentTime = time(NULL); printf("%s\n", ctime(&currentTime)); fflush(stdout);
-	Agent ag(CORNER, argv[1], argv[1], 5, true, 0.5);
+	Agent ag(CORNER, argv[1], argv[1], 5, true, 0.4);
 	if((fp = fopen(argv[2], "w")) == NULL){ printf("Failed to open %s\n", argv[2]); exit(1);}
 	int called = (N < THREAD_NUM)? N:THREAD_NUM, done = 0;
 	for(int i=0;i<called;++i) threads[i] = thread(playGame, i, ag);
