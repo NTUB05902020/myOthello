@@ -90,7 +90,7 @@ int main(int argc, char **argv){
 		ein = 0.0; now = 0;
 		for(int j=0;j<THREAD_NUM;++j) threads[j] = thread(Ein);
 		for(int j=0;j<THREAD_NUM;++j) threads[j].join();
-		gra.fill(0.0); now = 0; lr += ein*ein;
+		ein /= N; gra.fill(0.0); now = 0; lr += ein*ein;
 		for(int j=0;j<THREAD_NUM;++j) threads[j] = thread(Gra);
 		for(int j=0;j<THREAD_NUM;++j) threads[j].join();
 		double tmp = ita/sqrt(lr);
